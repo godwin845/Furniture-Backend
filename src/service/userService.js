@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from '../models/user.js';
 
@@ -17,8 +18,13 @@ export const registerUser = async (name, email, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({ name, email, password: hashedPassword });
   await newUser.save();
-  return { message: 'User registered successfully.' };
+
+  // Optionally generate JWT on registration
+  const token = jwt.sign({ userId: newUser._id, email: newUser.email }, 'your_jwt_secret', { expiresIn: '1h' });
+
+  return { message: 'User registered successfully.', token };
 };
+
 
 export const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
@@ -27,5 +33,8 @@ export const loginUser = async (email, password) => {
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) throw new Error('Invalid email or password.');
 
-  return { message: 'Login successful.' };
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret', { expiresIn: '1h' });
+
+  return { message: 'Login successful.', token };
 };
