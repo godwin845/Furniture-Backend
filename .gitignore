@@ -16,9 +16,6 @@ logs/
 # npm package lock file
 package-lock.json
 
-# TypeScript cache
-*.tsbuildinfo
-
 # VSCode settings folder
 .vscode/
 
